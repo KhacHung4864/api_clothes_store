@@ -16,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // kiểm tra xem mảng $data có các khóa hợp lệ không
     if ($data && isset($data["admin_email"])  && isset($data["admin_password"])) {
-        $userEmail = $data["admin_email"];
-        $userPassword = md5($data["admin_password"]);
+        $adminEmail = $data["admin_email"];
+        $adminPassword = $data["admin_password"];
 
         $sqlQuery = "SELECT * FROM admins_table WHERE admin_email = '$adminEmail' AND admin_password = '$adminPassword'";
         $resultOfQuery = $connectNow->query($sqlQuery);
