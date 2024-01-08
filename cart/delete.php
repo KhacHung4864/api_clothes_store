@@ -16,9 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode($jsonData, true);
 
     // kiểm tra xem mảng $data có các khóa hợp lệ không
-    if ($data && isset($data["token"]) && isset($data["user_id"])) {
+    if ($data && isset($data["token"]) && isset($data["cart_id"])) {
         $token = $data["token"];
-        $currentOnlineUserID = $data["user_id"];
+        $cartID = $data["cart_id"];
         try {
             $decoded = JWT::decode($token, new Key('admin', 'HS256'));
             // Token hợp lệ, tiếp tục xử lý yêu cầu
