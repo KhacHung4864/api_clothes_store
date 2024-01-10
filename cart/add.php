@@ -19,17 +19,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $color = $data['color'];
         $size = $data['size'];
 
-        $sqlQuery = "INSERT INTO cart_table SET user_id = '$user_id', item_id = '$item_id', quantity = '$quantity', color = '$color', size = '$size'";
-        $resultOfQuery = $connectNow->query($sqlQuery);
-        // kiểm tra Lấy dữ liệu thành công không
-        if ($resultOfQuery) {
-            http_response_code(200);
-            $response["status"] = "success";
-            $response["message"] = "Add item Successfully.";
+        // Kiểm tra xem phần tử đã tồn tại chưa
+        $checkQuery = "SELECT * FROM cart_table WHERE user_id = '$user_id' AND item_id = '$item_id' AND color = '$color' AND size = '$size'";
+        $checkResult = $connectNow->query($checkQuery);
+
+        if ($checkResult->num_rows > 0) {
+            // Nếu phần tử đã tồn tại, cập nhật quantity
+            $updateQuery = "UPDATE cart_table SET quantity = quantity + $quantity WHERE user_id = '$user_id' AND item_id = '$item_id' AND color = '$color' AND size = '$size'";
+            $updateResult = $connectNow->query($updateQuery);
+
+            if ($updateResult) {
+                http_response_code(200);
+                $response["status"] = "success";
+                $response["message"] = "Add item Successfully.";
+            } else {
+                http_response_code(500);
+                $response["status"] = "error";
+                $response["message"] = "Error inserting data.";
+            }
         } else {
-            http_response_code(500);
-            $response["status"] = "error";
-            $response["message"] = "Error inserting data.";
+            // Nếu phần tử chưa tồn tại, thêm mới
+            $insertQuery = "INSERT INTO cart_table SET user_id = '$user_id', item_id = '$item_id', quantity = '$quantity', color = '$color', size = '$size'";
+            $insertResult = $connectNow->query($insertQuery);
+
+            if ($insertResult) {
+                http_response_code(200);
+                $response["status"] = "success";
+                $response["message"] = "Add item Successfully.";
+            } else {
+                http_response_code(500);
+                $response["status"] = "error";
+                $response["message"] = "Error inserting data.";
+            }
         }
     } else {
         // Trả về mã lỗi 400 Bad Request
@@ -49,3 +70,4 @@ echo json_encode($response);
 
 // Đóng kết nối cơ sở dữ liệu
 $connectNow->close();
+?>
